@@ -29,6 +29,22 @@ npm run verify:render
 
 The render check expects the dev server to be running.
 
+## Publish on GitHub Pages
+
+This repo includes a GitHub Actions workflow that builds the Vite app and deploys `dist/` to GitHub Pages whenever `main` is pushed.
+
+In GitHub, open the repository settings and set:
+
+- **Pages > Build and deployment > Source**: GitHub Actions
+
+After the first successful workflow run, the game should be playable at:
+
+```text
+https://<your-github-username>.github.io/3D_compass_navigation_game/
+```
+
+If you rename the repository or use a custom domain, the relative Vite asset base in `vite.config.ts` should still work.
+
 ## Controls
 
 - `W` / `S`: forward and back
