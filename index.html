@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Topo Bearing Trainer</title>
+  </head>
+  <body>
+    <main id="app" aria-label="Topo Bearing Trainer">
+      <canvas id="world" aria-label="3D mountain navigation scene"></canvas>
+
+      <section class="panel map-panel" aria-label="Topographic map">
+        <div class="panel-header">
+          <span>Topo</span>
+          <span id="contourInterval">5 m</span>
+        </div>
+        <canvas id="mapCanvas" width="520" height="520" aria-label="Topographic map canvas"></canvas>
+        <canvas id="profileCanvas" width="520" height="118" aria-label="Elevation profile"></canvas>
+      </section>
+
+      <section class="panel nav-panel" aria-label="Navigation controls">
+        <div class="panel-header">
+          <span>Compass</span>
+          <span id="challengeState">Ready</span>
+        </div>
+
+        <canvas id="compassCanvas" width="230" height="230" aria-label="Compass"></canvas>
+
+        <div class="readout-grid">
+          <div>
+            <span>Heading</span>
+            <strong id="headingReadout">000</strong>
+          </div>
+          <div>
+            <span>Bearing</span>
+            <strong id="bearingReadout">000</strong>
+          </div>
+          <div>
+            <span>Drift</span>
+            <strong id="driftReadout">0.0 m</strong>
+          </div>
+          <div>
+            <span>Score</span>
+            <strong id="scoreReadout">100</strong>
+          </div>
+        </div>
+
+        <label class="bearing-field">
+          <span>Planned bearing</span>
+          <input id="bearingInput" type="number" min="0" max="359" step="1" value="0" inputmode="numeric" />
+        </label>
+
+        <div class="control-row">
+          <button id="plotBearingButton" type="button" title="Plot bearing from map">
+            <i data-lucide="locate-fixed"></i>
+            <span>Plot</span>
+          </button>
+          <button id="startButton" type="button" title="Start challenge">
+            <i data-lucide="flag"></i>
+            <span>Start</span>
+          </button>
+          <button id="resetButton" type="button" title="Reset to start">
+            <i data-lucide="rotate-ccw"></i>
+            <span>Reset</span>
+          </button>
+          <button id="lineButton" type="button" title="Toggle bearing line" aria-pressed="true">
+            <i data-lucide="eye"></i>
+            <span>Line</span>
+          </button>
+        </div>
+
+        <div class="status-strip">
+          <span id="rangeReadout">0 m</span>
+          <span id="elevationReadout">0 m</span>
+          <span id="paceReadout">Walk</span>
+        </div>
+      </section>
+
+      <div class="reticle" aria-hidden="true"></div>
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
