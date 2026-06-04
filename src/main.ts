@@ -58,6 +58,9 @@ const START: Point2 = { x: -78, z: -72 };
 const CONTROL: Point2 = { x: 72, z: 70 };
 const MAP_BEARING = Math.round(bearingBetween(START, CONTROL));
 const PLAYER_EYE_HEIGHT = 2.1;
+const DEFAULT_PITCH = toRadians(-2);
+const MIN_PITCH = toRadians(-58);
+const MAX_PITCH = toRadians(68);
 const FINISH_RADIUS = 6.5;
 
 let plannedBearing = MAP_BEARING;
@@ -70,6 +73,7 @@ const player = {
   x: START.x,
   z: START.z,
   heading: toRadians(MAP_BEARING),
+  pitch: DEFAULT_PITCH,
   speed: 0,
 };
 
@@ -147,6 +151,7 @@ createIcons({
 let previousTime = performance.now();
 let pointerDragging = false;
 let lastPointerX = 0;
+let lastPointerY = 0;
 
 resetToStart(false);
 showToast(`Map bearing ${formatBearing(MAP_BEARING)}`);
@@ -162,6 +167,7 @@ window.addEventListener("keyup", (event) => {
 worldCanvas.addEventListener("pointerdown", (event) => {
   pointerDragging = true;
   lastPointerX = event.clientX;
+  lastPointerY = event.clientY;
   worldCanvas.setPointerCapture(event.pointerId);
 });
 
@@ -170,8 +176,11 @@ worldCanvas.addEventListener("pointermove", (event) => {
     return;
   }
   const dx = event.clientX - lastPointerX;
+  const dy = event.clientY - lastPointerY;
   lastPointerX = event.clientX;
-  player.heading = normalizeRadians(player.heading - dx * 0.006);
+  lastPointerY = event.clientY;
+  player.heading = normalizeRadians(player.heading + dx * 0.006);
+  player.pitch = clamp(player.pitch - dy * 0.0045, MIN_PITCH, MAX_PITCH);
 });
 
 worldCanvas.addEventListener("pointerup", (event) => {
@@ -234,10 +243,10 @@ function tick(time: number) {
 function updatePlayer(dt: number) {
   const turnSpeed = 1.8;
   if (keys.has("arrowleft") || keys.has("q")) {
-    player.heading = normalizeRadians(player.heading + turnSpeed * dt);
+    player.heading = normalizeRadians(player.heading - turnSpeed * dt);
   }
   if (keys.has("arrowright") || keys.has("e")) {
-    player.heading = normalizeRadians(player.heading - turnSpeed * dt);
+    player.heading = normalizeRadians(player.heading + turnSpeed * dt);
   }
 
   const forwardIntent = (keys.has("w") || keys.has("arrowup") ? 1 : 0) - (keys.has("s") || keys.has("arrowdown") ? 1 : 0);
@@ -245,7 +254,7 @@ function updatePlayer(dt: number) {
   const sprint = keys.has("shift");
   const baseSpeed = sprint ? 16.5 : 9.2;
   const dir = bearingVector(radiansToBearing(player.heading));
-  const right = { x: dir.z, z: -dir.x };
+  const right = { x: -dir.z, z: dir.x };
 
   let moveX = dir.x * forwardIntent + right.x * strafeIntent;
   let moveZ = dir.z * forwardIntent + right.z * strafeIntent;
@@ -274,8 +283,15 @@ function updateCamera() {
   const elevation = terrainHeight(player.x, player.z);
   const eye = new THREE.Vector3(player.x, elevation + PLAYER_EYE_HEIGHT, player.z);
   const look = bearingVector(radiansToBearing(player.heading));
+  const lookDistance = 10;
+  const horizontalDistance = Math.cos(player.pitch) * lookDistance;
+  const verticalDistance = Math.sin(player.pitch) * lookDistance;
   camera.position.copy(eye);
-  camera.lookAt(eye.x + look.x * 10, eye.y - 0.35, eye.z + look.z * 10);
+  camera.lookAt(
+    eye.x + look.x * horizontalDistance,
+    eye.y + verticalDistance,
+    eye.z + look.z * horizontalDistance,
+  );
 }
 
 function updateScore(): ScoreState {
@@ -311,6 +327,7 @@ function resetToStart(scoring: boolean) {
   player.x = START.x;
   player.z = START.z;
   player.heading = toRadians(plannedBearing);
+  player.pitch = DEFAULT_PITCH;
   player.speed = 0;
   track.splice(0, track.length, { ...START });
   driftSamples.splice(0, driftSamples.length);
@@ -1013,14 +1030,14 @@ function projectBearingToEdge(start: Point2, bearing: number): Point2 {
 }
 
 function bearingBetween(a: Point2, b: Point2): number {
-  return normalizeDegrees((Math.atan2(b.x - a.x, b.z - a.z) * 180) / Math.PI);
+  return normalizeDegrees((Math.atan2(b.x - a.x, -(b.z - a.z)) * 180) / Math.PI);
 }
 
 function bearingVector(bearing: number): Point2 {
   const radians = toRadians(bearing);
   return {
     x: Math.sin(radians),
-    z: Math.cos(radians),
+    z: -Math.cos(radians),
   };
 }
 
@@ -1048,14 +1065,14 @@ function toRadians(degrees: number) {
 function worldToMap(x: number, z: number, width: number, height: number) {
   return {
     x: ((x + HALF_WORLD) / WORLD_SIZE) * width,
-    y: height - ((z + HALF_WORLD) / WORLD_SIZE) * height,
+    y: ((z + HALF_WORLD) / WORLD_SIZE) * height,
   };
 }
 
 function mapToWorld(x: number, y: number, width: number, height: number) {
   return {
     x: (x / width) * WORLD_SIZE - HALF_WORLD,
-    z: ((height - y) / height) * WORLD_SIZE - HALF_WORLD,
+    z: (y / height) * WORLD_SIZE - HALF_WORLD,
   };
 }
 
