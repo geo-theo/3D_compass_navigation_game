@@ -9,13 +9,107 @@
     <main id="app" aria-label="Topo Bearing Trainer">
       <canvas id="world" aria-label="3D mountain navigation scene"></canvas>
 
+      <section id="homeMenu" class="home-menu" aria-label="Main menu">
+        <div class="home-menu-inner">
+          <div class="home-copy">
+            <span class="home-kicker">Topo Bearing Trainer</span>
+            <h1>Learn the map, walk the world.</h1>
+            <p>Practice compass bearings, contour reading, and route choices in bright little 3D landscapes.</p>
+          </div>
+
+          <div class="menu-columns">
+            <section class="menu-card" aria-label="Tutorial levels">
+              <div class="menu-card-header">
+                <span>Tutorial</span>
+                <strong>3 lessons</strong>
+              </div>
+              <button class="menu-option" type="button" data-level="tutorial-1">
+                <span>Level 1</span>
+                <strong>Move and look</strong>
+              </button>
+              <button class="menu-option" type="button" data-level="tutorial-2">
+                <span>Level 2</span>
+                <strong>Contour playground</strong>
+              </button>
+              <button class="menu-option" type="button" data-level="tutorial-3">
+                <span>Level 3</span>
+                <strong>Bearing walk</strong>
+              </button>
+            </section>
+
+            <section class="menu-card" aria-label="Challenge levels">
+              <div class="menu-card-header">
+                <span>Challenge</span>
+                <strong>Find treasure</strong>
+              </div>
+              <button class="menu-option" type="button" data-level="challenge-grasslands">
+                <span>Grasslands</span>
+                <strong>Rolling green hills</strong>
+              </button>
+              <button class="menu-option" type="button" data-level="challenge-desert">
+                <span>Desert</span>
+                <strong>Sand and cactus</strong>
+              </button>
+              <button class="menu-option" type="button" data-level="challenge-mountain">
+                <span>Mountain</span>
+                <strong>Snowy ridges</strong>
+              </button>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <button id="homeButton" class="home-button" type="button" title="Return home" hidden>
+        <i data-lucide="home"></i>
+        <span>Home</span>
+      </button>
+
+      <section id="lessonPanel" class="lesson-panel" aria-label="Lesson guide" hidden>
+        <div class="lesson-header">
+          <span id="lessonTitle">Lesson</span>
+          <button id="lessonToggleButton" type="button" title="Hide lesson guide">
+            <i data-lucide="chevron-down"></i>
+          </button>
+        </div>
+        <div id="lessonBody" class="lesson-body"></div>
+      </section>
+
+      <section id="sculptPanel" class="sculpt-panel" aria-label="Topo sculpting tools" hidden>
+        <div class="sculpt-header">Topo tools</div>
+        <div class="sculpt-actions">
+          <button class="sculpt-button is-active" type="button" data-sculpt="raise">Raise</button>
+          <button class="sculpt-button" type="button" data-sculpt="lower">Lower</button>
+          <button class="sculpt-button" type="button" data-sculpt="flatten">Flatten</button>
+        </div>
+      </section>
+
       <section class="panel map-panel" aria-label="Topographic map">
         <div class="panel-header">
           <span>Topo</span>
-          <span id="contourInterval">5 m</span>
+          <div class="map-header-actions">
+            <span id="contourInterval" class="meta-value">5 m</span>
+            <button id="handheldToggleButton" class="map-tool-button" type="button" title="Hold compass" aria-pressed="false">
+              <i data-lucide="compass"></i>
+              <span>Hold</span>
+            </button>
+          </div>
         </div>
         <canvas id="mapCanvas" width="520" height="520" aria-label="Topographic map canvas"></canvas>
         <canvas id="profileCanvas" width="520" height="118" aria-label="Elevation profile"></canvas>
+      </section>
+
+      <section id="handheldCompass" class="handheld-compass" aria-label="Handheld compass" hidden>
+        <canvas id="handheldCompassCanvas" width="360" height="360" aria-label="Handheld compass bearing dial"></canvas>
+        <div class="handheld-readout">
+          <div>
+            <span>Heading</span>
+            <strong id="handheldHeadingReadout">000</strong>
+          </div>
+          <div>
+            <span>Bearing</span>
+            <strong id="handheldBearingReadout">000</strong>
+          </div>
+        </div>
       </section>
 
       <section class="panel nav-panel" aria-label="Navigation controls">
@@ -36,7 +130,7 @@
             <strong id="bearingReadout">000</strong>
           </div>
           <div>
-            <span>Drift</span>
+            <span id="metricLabel">Drift</span>
             <strong id="driftReadout">0.0 m</strong>
           </div>
           <div>

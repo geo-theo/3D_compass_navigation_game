@@ -50,6 +50,295 @@ input {
   touch-action: none;
 }
 
+.home-menu {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 26px;
+  background:
+    linear-gradient(180deg, rgba(218, 244, 255, 0.94), rgba(246, 252, 232, 0.92)),
+    rgba(236, 249, 243, 0.95);
+  color: #213631;
+}
+
+.home-menu[hidden] {
+  display: none !important;
+}
+
+.home-menu-inner {
+  width: min(1060px, 100%);
+  display: grid;
+  grid-template-columns: minmax(260px, 0.78fr) minmax(420px, 1.22fr);
+  gap: 22px;
+  align-items: stretch;
+}
+
+.home-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 420px;
+  padding: 26px;
+  border: 1px solid rgba(44, 93, 83, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 18px 44px rgba(53, 102, 91, 0.16);
+}
+
+.home-kicker {
+  width: fit-content;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: #f7d67a;
+  color: #315145;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.home-copy h1 {
+  max-width: 560px;
+  margin: 18px 0 12px;
+  color: #1f433c;
+  font-size: clamp(2.2rem, 5vw, 4.6rem);
+  line-height: 0.98;
+  letter-spacing: 0;
+}
+
+.home-copy p {
+  max-width: 520px;
+  margin: 0;
+  color: #426257;
+  font-size: 1.08rem;
+  font-weight: 620;
+  line-height: 1.55;
+}
+
+.menu-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.menu-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid rgba(44, 93, 83, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 18px 44px rgba(53, 102, 91, 0.14);
+}
+
+.menu-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 42px;
+  color: #214940;
+  font-weight: 850;
+}
+
+.menu-card-header span {
+  font-size: 1.08rem;
+}
+
+.menu-card-header strong {
+  color: #5b746b;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.menu-option {
+  display: flex;
+  min-height: 88px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(48, 120, 104, 0.18);
+  border-radius: 8px;
+  background: #fdfaf1;
+  color: #264b43;
+  cursor: pointer;
+  padding: 14px;
+  text-align: left;
+  box-shadow: 0 8px 20px rgba(48, 120, 104, 0.1);
+}
+
+.menu-option:hover,
+.menu-option:focus-visible {
+  outline: none;
+  transform: translateY(-1px);
+  border-color: rgba(242, 140, 56, 0.55);
+  background: #fff5dd;
+}
+
+.menu-option span {
+  color: #2c8a7b;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.menu-option strong {
+  font-size: 1.08rem;
+  font-weight: 850;
+}
+
+.menu-open .map-panel,
+.menu-open .nav-panel,
+.menu-open .reticle,
+.menu-open .handheld-compass,
+.menu-open .toast,
+.menu-open .home-button,
+.menu-open .lesson-panel,
+.menu-open .sculpt-panel {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.home-button {
+  position: fixed;
+  z-index: 9;
+  left: 18px;
+  top: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid rgba(247, 242, 226, 0.2);
+  border-radius: 6px;
+  background: rgba(24, 30, 29, 0.82);
+  color: #fff9ea;
+  cursor: pointer;
+  font-weight: 780;
+  backdrop-filter: blur(12px);
+}
+
+.home-button[hidden] {
+  display: none !important;
+}
+
+.home-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.lesson-panel,
+.sculpt-panel {
+  position: fixed;
+  z-index: 6;
+  left: 18px;
+  top: 68px;
+  width: min(420px, calc(100vw - 36px));
+  border: 1px solid rgba(247, 242, 226, 0.2);
+  border-radius: 8px;
+  background: rgba(24, 30, 29, 0.84);
+  color: #f8f2df;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(14px);
+}
+
+.lesson-panel[hidden],
+.sculpt-panel[hidden] {
+  display: none !important;
+}
+
+.lesson-header,
+.sculpt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 38px;
+  padding: 0 12px;
+  border-bottom: 1px solid rgba(247, 242, 226, 0.13);
+  font-size: 0.8rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+#lessonToggleButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(247, 242, 226, 0.18);
+  border-radius: 6px;
+  background: rgba(246, 241, 223, 0.1);
+  color: #fff9ea;
+  cursor: pointer;
+}
+
+#lessonToggleButton svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 160ms ease;
+}
+
+.lesson-panel.is-collapsed #lessonToggleButton svg {
+  transform: rotate(-90deg);
+}
+
+.lesson-body {
+  display: grid;
+  gap: 8px;
+  max-height: min(36vh, 310px);
+  overflow: auto;
+  padding: 12px;
+}
+
+.lesson-panel.is-collapsed .lesson-body {
+  display: none;
+}
+
+.lesson-body p {
+  margin: 0;
+  color: #dedccf;
+  font-size: 0.88rem;
+  line-height: 1.42;
+}
+
+.sculpt-panel {
+  top: auto;
+  bottom: 18px;
+  left: 458px;
+  width: 276px;
+}
+
+.sculpt-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px;
+}
+
+.sculpt-button {
+  height: 36px;
+  border: 1px solid rgba(247, 242, 226, 0.18);
+  border-radius: 6px;
+  background: rgba(246, 241, 223, 0.1);
+  color: #fff9ea;
+  cursor: pointer;
+  font-weight: 780;
+}
+
+.sculpt-button.is-active,
+.sculpt-button:hover,
+.sculpt-button:focus-visible {
+  border-color: rgba(79, 180, 202, 0.72);
+  background: rgba(79, 180, 202, 0.23);
+  outline: none;
+}
+
 .panel {
   position: fixed;
   z-index: 5;
@@ -74,9 +363,46 @@ input {
   text-transform: uppercase;
 }
 
-.panel-header span:last-child {
+.panel-header .meta-value,
+#challengeState {
   color: var(--ink-soft);
   font-weight: 650;
+}
+
+.map-header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-tool-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 28px;
+  gap: 6px;
+  border: 1px solid rgba(247, 242, 226, 0.18);
+  border-radius: 6px;
+  background: rgba(246, 241, 223, 0.1);
+  color: #fff9ea;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 760;
+}
+
+.map-tool-button:hover,
+.map-tool-button:focus-visible {
+  background: rgba(242, 140, 56, 0.24);
+  border-color: rgba(242, 140, 56, 0.68);
+  outline: none;
+}
+
+.map-tool-button svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  stroke-width: 2.5;
 }
 
 .map-panel {
@@ -112,6 +438,9 @@ input {
   bottom: 18px;
   width: min(94vw, 420px);
   padding-bottom: 14px;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
 }
 
 #compassCanvas {
@@ -119,6 +448,73 @@ input {
   width: 170px;
   height: 170px;
   margin: 12px auto 4px;
+}
+
+.handheld-compass {
+  position: fixed;
+  z-index: 7;
+  left: 50%;
+  bottom: 18px;
+  width: min(32vw, 340px);
+  min-width: 276px;
+  padding: 12px 14px 14px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(247, 242, 226, 0.2);
+  border-radius: 8px;
+  background: rgba(24, 30, 29, 0.86);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(14px);
+}
+
+.handheld-compass[hidden] {
+  display: none !important;
+}
+
+#handheldCompassCanvas {
+  display: block;
+  width: 100%;
+  max-width: 312px;
+  aspect-ratio: 1 / 1;
+  height: auto;
+  margin: 0 auto;
+  cursor: grab;
+  touch-action: none;
+}
+
+.handheld-compass.is-dragging #handheldCompassCanvas {
+  cursor: grabbing;
+}
+
+.handheld-readout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.handheld-readout div {
+  min-width: 0;
+  border: 1px solid rgba(247, 242, 226, 0.13);
+  border-radius: 6px;
+  padding: 8px;
+  background: rgba(247, 242, 226, 0.06);
+}
+
+.handheld-readout span {
+  display: block;
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.handheld-readout strong {
+  display: block;
+  margin-top: 4px;
+  color: #fffaf0;
+  font-size: 1.16rem;
+  line-height: 1;
 }
 
 .readout-grid {
@@ -307,6 +703,42 @@ input {
 }
 
 @media (max-width: 860px) {
+  .home-menu {
+    align-items: start;
+    overflow: auto;
+    padding: 14px;
+  }
+
+  .home-menu-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .home-copy {
+    min-height: auto;
+  }
+
+  .menu-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .home-button {
+    left: 10px;
+    top: 10px;
+  }
+
+  .lesson-panel {
+    left: 10px;
+    top: 58px;
+    width: min(360px, calc(100vw - 20px));
+  }
+
+  .sculpt-panel {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    width: auto;
+  }
+
   .map-panel {
     top: 10px;
     right: 10px;
@@ -319,6 +751,18 @@ input {
     right: 10px;
     bottom: 10px;
     width: auto;
+  }
+
+  .handheld-compass {
+    bottom: 10px;
+    width: min(86vw, 330px);
+    min-width: 0;
+  }
+
+  .handheld-open .nav-panel {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(100% + 18px));
   }
 
   #compassCanvas {

@@ -6,12 +6,21 @@ The first slice is built with **TypeScript + Three.js**. That keeps the code clo
 
 ## What is playable now
 
+- Start from a home menu with Tutorial and Challenge modes.
 - Walk through a generated mountain terrain.
 - Read a topographic map generated from the same heightfield as the 3D world.
 - Compare contour spacing on the map with hills, ridges, valleys, and slopes in the scene.
 - Plot a bearing from the start to the control.
 - Follow the bearing using the compass HUD.
 - Get scored by cross-track drift from the planned bearing line.
+- Hunt for clues and a treasure chest in Grasslands, Desert, and Mountain challenge levels.
+
+## Modes
+
+- **Tutorial Level 1**: small practice tile with one hill, one depression, one tree, and one rock.
+- **Tutorial Level 2**: contour playground with raise/lower/flatten tools on the topo map.
+- **Tutorial Level 3**: the original bearing-following lesson.
+- **Challenge**: collect three clues, reveal the treasure chest, and score well by keeping routes short while avoiding steep slopes.
 
 ## Run it
 
