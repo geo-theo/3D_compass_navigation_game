@@ -99,7 +99,12 @@
       </section>
 
       <section id="handheldCompass" class="handheld-compass" aria-label="Handheld compass" hidden>
-        <canvas id="handheldCompassCanvas" width="360" height="360" aria-label="Handheld compass bearing dial"></canvas>
+        <div class="handheld-dial-wrap">
+          <div class="bearing-sight" aria-hidden="true">
+            <span class="bearing-sight-aperture"></span>
+          </div>
+          <canvas id="handheldCompassCanvas" width="360" height="360" aria-label="Handheld compass bearing dial"></canvas>
+        </div>
         <div class="handheld-readout">
           <div>
             <span>Heading</span>

@@ -1652,6 +1652,9 @@ function drawCompassFace(
 
   drawNeedle(context, -heading, radius * 0.68, "#c92e1f", scale);
   drawBearingBug(context, plannedBearing - heading, radius * 0.72, scale);
+  if (mode === "handheld") {
+    drawSightingLine(context, radius, scale);
+  }
 
   context.fillStyle = "#20251f";
   context.font = `850 ${26 * scale}px Inter, sans-serif`;
@@ -1661,6 +1664,38 @@ function drawCompassFace(
   context.fillStyle = "#596051";
   context.fillText("heading", 0, 30 * scale);
 
+  context.restore();
+}
+
+function drawSightingLine(
+  context: CanvasRenderingContext2D,
+  radius: number,
+  scale: number,
+) {
+  context.save();
+  context.lineCap = "round";
+
+  context.strokeStyle = "rgba(255, 255, 255, 0.88)";
+  context.lineWidth = 7 * scale;
+  context.beginPath();
+  context.moveTo(0, -radius * 0.3);
+  context.lineTo(0, -radius * 0.94);
+  context.stroke();
+
+  context.strokeStyle = "#26302b";
+  context.lineWidth = 3 * scale;
+  context.beginPath();
+  context.moveTo(0, -radius * 0.3);
+  context.lineTo(0, -radius * 0.94);
+  context.stroke();
+
+  context.strokeStyle = "#26302b";
+  context.lineWidth = 3 * scale;
+  context.beginPath();
+  context.moveTo(-9 * scale, -radius * 0.82);
+  context.lineTo(0, -radius * 0.94);
+  context.lineTo(9 * scale, -radius * 0.82);
+  context.stroke();
   context.restore();
 }
 

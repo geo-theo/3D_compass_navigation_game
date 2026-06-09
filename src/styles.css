@@ -470,13 +470,64 @@ input {
   display: none !important;
 }
 
+.handheld-dial-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 312px;
+  margin: 0 auto;
+}
+
+.bearing-sight {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: -44px;
+  width: 42px;
+  height: 58px;
+  transform: translateX(-50%);
+  border: 3px solid #232a26;
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  background: rgba(242, 238, 219, 0.96);
+  box-shadow:
+    0 5px 0 rgba(255, 255, 255, 0.22) inset,
+    0 8px 16px rgba(0, 0, 0, 0.24);
+  pointer-events: none;
+}
+
+.bearing-sight::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 31px;
+  width: 3px;
+  height: 38px;
+  transform: translateX(-50%);
+  background: #26302b;
+  box-shadow:
+    -1px 0 0 rgba(255, 255, 255, 0.72),
+    1px 0 0 rgba(255, 255, 255, 0.72);
+}
+
+.bearing-sight-aperture {
+  position: absolute;
+  left: 50%;
+  top: 9px;
+  width: 17px;
+  height: 17px;
+  transform: translateX(-50%);
+  border: 3px solid #26302b;
+  border-radius: 50%;
+  background: rgba(112, 191, 213, 0.38);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.64) inset;
+}
+
 #handheldCompassCanvas {
   display: block;
   width: 100%;
-  max-width: 312px;
   aspect-ratio: 1 / 1;
   height: auto;
-  margin: 0 auto;
+  margin: 0;
   cursor: grab;
   touch-action: none;
 }
