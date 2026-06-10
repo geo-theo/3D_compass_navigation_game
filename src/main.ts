@@ -1,5 +1,5 @@
 import "./styles.css";
-import { ChevronDown, Compass, createIcons, Eye, EyeOff, Flag, Home, LocateFixed, RotateCcw } from "lucide";
+import { ChevronDown, Compass, createIcons, Eye, EyeOff, Flag, Home, LocateFixed, MapPin, RotateCcw } from "lucide";
 import * as THREE from "three";
 
 type Point2 = {
@@ -58,7 +58,7 @@ type RuntimeObjective = {
   kind: "clue" | "treasure";
   point: Point2;
   collected: boolean;
-  mesh: THREE.Object3D;
+  mesh: THREE.Object3D | null;
 };
 
 type SculptEdit = {
@@ -104,6 +104,7 @@ const bearingInput = mustInput("#bearingInput");
 const handheldToggleButton = mustButton("#handheldToggleButton");
 const plotBearingButton = mustButton("#plotBearingButton");
 const startButton = mustButton("#startButton");
+const pinButton = mustButton("#pinButton");
 const resetButton = mustButton("#resetButton");
 const lineButton = mustButton("#lineButton");
 const toast = mustElement("#toast");
@@ -398,7 +399,11 @@ handheldToggleButton.addEventListener("click", () => {
 
 startButton.addEventListener("click", () => {
   resetToStart(true);
-  showToast("Challenge started");
+  showToast(activeLevel.mode === "challenge" ? "Pin the 3 clue locations" : "Challenge started");
+});
+
+pinButton.addEventListener("click", () => {
+  pinClueAtCurrentPosition();
 });
 
 resetButton.addEventListener("click", () => {
@@ -528,7 +533,7 @@ function updatePlayer(dt: number) {
     pathDistance += stepDistance;
     pathCost += stepDistance * (1 + slope * 0.22 + extraSlope * extraSlope * 22);
     steepPenalty += extraSlope * extraSlope * stepDistance * 4.5;
-    collectNearbyObjective();
+    collectNearbyTreasure();
   }
 
   const lastPoint = track[track.length - 1];
@@ -625,7 +630,9 @@ function resetToStart(scoring: boolean) {
   steepPenalty = 0;
   objectives.forEach((objective) => {
     objective.collected = false;
-    objective.mesh.visible = objective.kind === "clue";
+    if (objective.mesh) {
+      objective.mesh.visible = false;
+    }
   });
   challengeActive = scoring && (activeLevel.bearingLesson || activeLevel.mode === "challenge");
   challengeFinished = false;
@@ -683,7 +690,9 @@ function startLevel(level: LevelConfig) {
   lessonTitle.textContent = `${level.title}: ${level.subtitle}`;
   lessonBody.innerHTML = level.tutorialHtml ?? "";
   sculptPanel.hidden = !level.allowSculpt;
-  showToast(level.mode === "challenge" ? "Collect 3 clues, then find the chest" : level.subtitle);
+  pinButton.hidden = level.mode !== "challenge";
+  document.body.classList.toggle("challenge-mode", level.mode === "challenge");
+  showToast(level.mode === "challenge" ? "Pin 3 clues, then find the chest" : level.subtitle);
 }
 
 function applyLevelAtmosphere() {
@@ -700,6 +709,8 @@ function showHomeMenu() {
   setMenuOpen(true);
   lessonPanel.hidden = true;
   sculptPanel.hidden = true;
+  pinButton.hidden = true;
+  document.body.classList.remove("challenge-mode");
   setHandheldCompassOpen(false);
 }
 
@@ -915,10 +926,8 @@ function createObjectiveObjects() {
     return group;
   }
 
-  activeLevel.clues?.forEach((point, index) => {
-    const mesh = createClueMarker(point, index + 1);
-    group.add(mesh);
-    objectives.push({ kind: "clue", point, collected: false, mesh });
+  activeLevel.clues?.forEach((point) => {
+    objectives.push({ kind: "clue", point, collected: false, mesh: null });
   });
 
   if (activeLevel.treasure) {
@@ -927,37 +936,6 @@ function createObjectiveObjects() {
     group.add(mesh);
     objectives.push({ kind: "treasure", point: activeLevel.treasure, collected: false, mesh });
   }
-
-  return group;
-}
-
-function createClueMarker(point: Point2, clueNumber: number) {
-  const group = new THREE.Group();
-  group.position.set(point.x, terrainHeight(point.x, point.z) + 1.2, point.z);
-
-  const gem = new THREE.Mesh(
-    new THREE.OctahedronGeometry(1.6, 0),
-    new THREE.MeshStandardMaterial({
-      color: 0x45c4ff,
-      emissive: 0x0c4f6f,
-      emissiveIntensity: 0.55,
-      roughness: 0.34,
-    }),
-  );
-  gem.castShadow = true;
-  group.add(gem);
-
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(3.7, 0.06, 8, 52),
-    new THREE.MeshBasicMaterial({ color: 0x45c4ff, transparent: true, opacity: 0.72 }),
-  );
-  ring.rotation.x = Math.PI / 2;
-  ring.position.y = -1;
-  group.add(ring);
-
-  const label = createFloatingLabel(String(clueNumber), "#123746");
-  label.position.y = 2.6;
-  group.add(label);
 
   return group;
 }
@@ -1004,62 +982,64 @@ function createTreasureChest(point: Point2) {
   return group;
 }
 
-function createFloatingLabel(text: string, color: string) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 96;
-  canvas.height = 96;
-  const context = get2dContext(canvas);
-  context.fillStyle = "rgba(255, 255, 255, 0.92)";
-  context.beginPath();
-  context.arc(48, 48, 34, 0, Math.PI * 2);
-  context.fill();
-  context.fillStyle = color;
-  context.font = "800 44px Inter, sans-serif";
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  context.fillText(text, 48, 50);
-  const texture = new THREE.CanvasTexture(canvas);
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true }));
-  sprite.scale.set(5.2, 5.2, 1);
-  return sprite;
-}
 
-function collectNearbyObjective() {
-  if (challengeFinished) {
+function pinClueAtCurrentPosition() {
+  if (activeLevel.mode !== "challenge" || challengeFinished) {
     return;
   }
 
   const playerPoint = { x: player.x, z: player.z };
-  for (const objective of objectives) {
-    if (objective.collected) {
-      continue;
-    }
-    if (objective.kind === "treasure" && getCollectedClueCount() < 3) {
-      continue;
-    }
-    if (Math.hypot(playerPoint.x - objective.point.x, playerPoint.z - objective.point.z) > COLLECT_RADIUS) {
-      continue;
-    }
+  const nearestClue = objectives
+    .filter((objective) => objective.kind === "clue" && !objective.collected)
+    .map((objective) => ({
+      objective,
+      distance: Math.hypot(playerPoint.x - objective.point.x, playerPoint.z - objective.point.z),
+    }))
+    .sort((a, b) => a.distance - b.distance)[0];
 
-    objective.collected = true;
-    objective.mesh.visible = false;
-
-    if (objective.kind === "clue") {
-      const clues = getCollectedClueCount();
-      showToast(clues === 3 ? "All clues found. Treasure revealed." : `Clue ${clues}/3 found`);
-      revealTreasureIfReady();
-    } else {
-      challengeActive = false;
-      challengeFinished = true;
-      showToast(`Treasure found. Score ${updateScore().score}`);
-    }
+  if (!nearestClue || nearestClue.distance > COLLECT_RADIUS) {
+    showToast("No clue at this position");
+    return;
   }
+
+  nearestClue.objective.collected = true;
+  const clues = getCollectedClueCount();
+  showToast(clues === 3 ? "All clues pinned. Treasure revealed." : `Clue ${clues}/3 pinned`);
+  revealTreasureIfReady();
+}
+
+function collectNearbyTreasure() {
+  if (challengeFinished || getCollectedClueCount() < 3) {
+    return;
+  }
+
+  const treasure = objectives.find(
+    (objective) => objective.kind === "treasure" && !objective.collected,
+  );
+  if (!treasure) {
+    return;
+  }
+
+  const range = Math.hypot(player.x - treasure.point.x, player.z - treasure.point.z);
+  if (range > COLLECT_RADIUS) {
+    return;
+  }
+
+  treasure.collected = true;
+  if (treasure.mesh) {
+    treasure.mesh.visible = false;
+  }
+  challengeActive = false;
+  challengeFinished = true;
+  showToast(`Treasure found. Score ${updateScore().score}`);
 }
 
 function revealTreasureIfReady() {
   const treasure = objectives.find((objective) => objective.kind === "treasure");
   if (treasure && getCollectedClueCount() >= 3 && !treasure.collected) {
-    treasure.mesh.visible = true;
+    if (treasure.mesh) {
+      treasure.mesh.visible = true;
+    }
   }
 }
 
@@ -1405,9 +1385,14 @@ function drawObjectiveMarkers(context: CanvasRenderingContext2D) {
   }
 
   for (const objective of objectives) {
-    if (objective.kind === "clue" && !objective.collected) {
+    if (objective.kind === "clue") {
       const clueNumber = objectives.filter((candidate) => candidate.kind === "clue").indexOf(objective) + 1;
-      drawMapMarker(context, objective.point, "#267fa3", String(clueNumber));
+      drawMapMarker(
+        context,
+        objective.point,
+        objective.collected ? "#3f8b55" : "#267fa3",
+        objective.collected ? "OK" : String(clueNumber),
+      );
     }
     if (objective.kind === "treasure" && getCollectedClueCount() >= 3 && !objective.collected) {
       drawMapMarker(context, objective.point, "#bd7a13", "T");
@@ -2128,6 +2113,7 @@ function renderIcons() {
       Flag,
       Home,
       LocateFixed,
+      MapPin,
       RotateCcw,
     },
   });

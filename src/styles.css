@@ -634,6 +634,10 @@ input {
   padding: 12px 14px 0;
 }
 
+.challenge-mode .control-row {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 .control-row button {
   display: inline-flex;
   align-items: center;
